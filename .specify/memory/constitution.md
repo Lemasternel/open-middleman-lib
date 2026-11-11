@@ -1,50 +1,68 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# open-middleman-lib Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Library-Only Scope
+The project delivers a Rust library crate and nothing else. It MUST NOT ship
+a binary. Applications that expose the library are built by consumers.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Specifications Are the Source of Truth
+Specifications define expected behavior; the code MUST conform to them.
+When code and spec diverge, a report referencing the code location and the
+spec section MUST be produced. The divergence is resolved by fixing the code
+or by amending the spec through the amendment process (see Governance).
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Test-First (NON-NEGOTIABLE)
+Tests for a behavior are written before its implementation and MUST be
+observed failing before implementation code is written. Each test function
+covers exactly one scenario. Every public behavior is covered at least for
+its success path, its error path, and its boundary conditions.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Public API Stability and Consumer Control
+The public API is explicit and documented. The library MUST NOT:
+- install a global logger or other global state;
+- read configuration from fixed filesystem paths;
+- terminate the process or register signal handlers.
+Logging is emitted through the `log` facade only; the consumer decides how
+it is recorded. Breaking changes to the public API require a MAJOR version
+bump and a documented migration note.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Target Compatibility
+The library MUST build and run on Windows 8 Embedded. It declares
+`rust-version = "1.77.2"` in `Cargo.toml`, and the development toolchain is
+pinned to 1.77.2 via `rust-toolchain.toml`. Every dependency MUST build on
+1.77.2; a dependency that raises the MSRV is not allowed. Only APIs available
+on the Windows 8 target may be used.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### VI. Production Code Safety
+`unwrap()` and `expect()` are prohibited in production code. Errors are
+returned with explicit error types. The library MUST NOT panic on any input
+originating from network traffic. Tests may use `unwrap()` and `expect()`.
+Enforced in CI via `clippy::unwrap_used` and `clippy::expect_used`.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### VII. Traffic and Credential Confidentiality
+Captured traffic, certificates, and private keys MUST NOT be written to logs
+or persisted to disk.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+## Additional Constraints
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+- Rust toolchain: 1.77.2 (pinned in `rust-toolchain.toml`, declared in `Cargo.toml`).
+- Logging: `log` crate (https://github.com/rust-lang/log), version pinned in `Cargo.lock`.
+- Spec process: GitHub Spec Kit (https://github.com/github/spec-kit).
+
+## Development Workflow
+
+- Any behavior change starts with a spec update.
+- Commit messages follow https://github.com/iuricode/padroes-de-commits.
+- Code review verifies compliance with all Core Principles.
+- CI builds and tests the library on the 1.77.2 toolchain.
+- CI runs clippy with the unwrap and expect lints denied.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+- This constitution supersedes other project practices.
+- Amendments require a documented rationale, maintainer approval, and a
+  backwards-compatibility assessment.
+- Violations must be justified in the plan's Complexity Tracking section.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-11-06 | **Last Amended**: 2026-11-06
