@@ -1,7 +1,7 @@
 {
   "integration": "claude",
   "version": "1.2.5",
-  "installed_at": "2026-11-06T22:09:11.195331+00:00",
+  "installed_at": "2026-11-21T16:28:28.884055+00:00",
   "files": {
     ".claude/skills/speckit-analyze/SKILL.md": "8cf7276825cb06167981c5aa46bf5ec9df2923cf99b148980298739c441d974d",
     ".claude/skills/speckit-clarify/SKILL.md": "19637a863e067bd89169bd0cebf49f53d16f6ff58d1edaac91b39333cd7341fb",
