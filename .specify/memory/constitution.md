@@ -78,18 +78,19 @@ Enforced in CI via `clippy::unwrap_used`, `clippy::expect_used` and
   (https://www.conventionalcommits.org, source:
   https://github.com/conventional-commits/conventionalcommits.org):
   `<type>[optional scope][!]: <description>`, with optional body and footers.
-  Breaking changes are marked with `!` or a `BREAKING CHANGE:` footer.
+  Only the abbreviated type names are allowed: `feat`, `fix`, `docs`,
+  `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore` and `revert`
+  (never long forms such as `feature` or `bugfix`). Breaking changes are
+  marked with `!` or a `BREAKING CHANGE:` footer.
 - Branch names follow Conventional Branch
   (https://conventional-branch.github.io, source:
   https://github.com/conventional-branch/conventional-branch):
-  `<type>/<description>`, where type is one of `feat/`, `fix/`, `hotfix/`,
-  `release/` or `chore/`. Names use lowercase letters, digits and hyphens
-  (dots only in release versions), with no consecutive, leading or trailing
-  hyphens or dots. The default branch (`master`/`main`) and `develop`, if
-  used, are exempt.
-- Commit and branch types MUST use the abbreviated form: `feat`, never
-  `feature`; `fix`, never `bugfix`; likewise for every other type (e.g.
-  `docs`, `refactor`, `perf`, `ci`), never a spelled-out variant.
+  `<type>/<description>`, using the same abbreviated naming. Allowed types
+  are `feat/`, `fix/`, `hotfix/`, `release/` and `chore/`; the long forms
+  `feature/` and `bugfix/` are not accepted. Names use lowercase letters,
+  digits and hyphens (dots only in release versions), with no consecutive,
+  leading or trailing hyphens or dots. The default branch (`master`/`main`)
+  and `develop`, if used, are exempt.
 - Code review verifies compliance with all Core Principles.
 - CI builds and tests the library on the 1.77.2 toolchain.
 - CI runs clippy with `unwrap_used`, `expect_used` and `panic` denied.
