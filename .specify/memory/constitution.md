@@ -1,3 +1,19 @@
+<!--
+Sync Impact Report
+- Version change: 1.0.0 -> 1.1.0 (MINOR: adds a branch naming rule and
+  replaces the commit message convention).
+- Modified sections: Development Workflow (commit messages now follow
+  Conventional Commits 1.0.0 instead of iuricode/padroes-de-commits; new
+  branch naming rule based on Conventional Branch).
+- Added/removed sections: none.
+- Rationale: adopt widely used, tool-friendly conventions (changelog and
+  release tooling understand Conventional Commits) and keep the same commit
+  and branch rules in open-middleman-lib and open-middleman-cli.
+- Backwards compatibility: no effect on code or public API. Existing commits
+  and branches are not rewritten; the rules apply to new ones.
+- Templates requiring updates: none (.specify templates do not reference the
+  commit or branch conventions).
+-->
 # open-middleman-lib Constitution
 
 ## Core Principles
@@ -53,7 +69,19 @@ or persisted to disk.
 ## Development Workflow
 
 - Any behavior change starts with a spec update.
-- Commit messages follow https://github.com/iuricode/padroes-de-commits.
+- Commit messages follow Conventional Commits 1.0.0
+  (https://www.conventionalcommits.org, source:
+  https://github.com/conventional-commits/conventionalcommits.org):
+  `<type>[optional scope][!]: <description>`, with optional body and footers.
+  Breaking changes are marked with `!` or a `BREAKING CHANGE:` footer.
+- Branch names follow Conventional Branch
+  (https://conventional-branch.github.io, source:
+  https://github.com/conventional-branch/conventional-branch):
+  `<type>/<description>`, where type is one of `feature/` (or `feat/`),
+  `bugfix/` (or `fix/`), `hotfix/`, `release/` or `chore/`. Names use
+  lowercase letters, digits and hyphens (dots only in release versions), with
+  no consecutive, leading or trailing hyphens or dots. The default branch
+  (`master`/`main`) and `develop`, if used, are exempt.
 - Code review verifies compliance with all Core Principles.
 - CI builds and tests the library on the 1.77.2 toolchain.
 - CI runs clippy with the unwrap and expect lints denied.
@@ -65,4 +93,4 @@ or persisted to disk.
   backwards-compatibility assessment.
 - Violations must be justified in the plan's Complexity Tracking section.
 
-**Version**: 1.0.0 | **Ratified**: 2026-11-06 | **Last Amended**: 2026-11-06
+**Version**: 1.1.0 | **Ratified**: 2026-11-06 | **Last Amended**: 2026-11-21
