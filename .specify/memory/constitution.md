@@ -1,42 +1,36 @@
 <!--
 Sync Impact Report
-- Version change: 2.3.0 -> 3.0.0 (MAJOR).
-- Rationale: the constitution states principles and rules only; it MUST NOT
-  name the programming language, its version, toolchain files, build manifests
-  or lock files, linters or any other stack detail. Those are implementation
-  decisions recorded in the plan.
-- Redefined principles (stack-specific rules removed or rewritten in a
-  language-agnostic way):
-  - I. Library-Only Scope: no longer names a language crate or a build-manifest
-    binary target; the project still MUST NOT ship an executable.
-  - IV. Target Compatibility: removed the target triple, the minimum language
-    version, the language edition, and the pinned toolchain and build-manifest
-    files. Windows 8 Embedded (x86_64) remains the main target, and every
-    dependency and the toolchain MUST still support it.
-  - V. Production Code Safety: rewritten without language constructs. Aborting
-    the process on unexpected states is still prohibited in production code;
-    failures are still reported to the caller as explicit, typed errors; the
-    rule is still enforced automatically in CI, with the tool chosen in the
-    plan.
-- Development Workflow: the CI rule pinned to a language version became
-  "CI builds and tests for the main target"; the named linter rules became an
-  automated check for Principle V.
-- Unchanged: II, III, VI (Mandatory Logging), Additional Constraints (GitHub
-  Spec Kit), commit and branch rules, Governance.
-- Backwards compatibility: no rule is made stricter; existing code and build
-  configuration still comply. Removing rules from the constitution does not
-  remove them from the repository: the current toolchain and lint settings stay
-  as implementation decisions.
-- Follow-up files: none required. The plan template already keeps language,
-  version and tools in its Technical Context section.
+- Version change: 2.2.0 -> 2.3.0 (MINOR).
+- Added principle: VI. Mandatory Logging. Logging is no longer conditional
+  ("if the library emits logs"); every significant operation and every failure
+  path MUST be logged. The principle does not name a logging library.
+- Removed from Additional Constraints (stack, not constitution):
+  - the logging library and its link (`log` crate) and the requirement to pin
+    it in `Cargo.lock`;
+  - the "Rust toolchain: 1.77.2" bullet, already covered by Principle IV.
+- Kept on purpose: Windows 8 Embedded target, `x86_64-pc-windows-msvc`,
+  `rust-version = "1.77.2"`, edition 2021 and the pinned toolchain in
+  Principle IV, because they are compatibility requirements of the main
+  target, not stack choices. GitHub Spec Kit (process) and the clippy lints
+  that enforce Principle V are also kept.
+- Cleanup: removed lines and bullets duplicated by an earlier merge, and fixed
+  the footer, which still said 2.1.0 although the 2.2.0 amendment was applied.
+- Rationale: logging is a core requirement of a debugging proxy; the library
+  chosen to implement it is an implementation decision that belongs to the
+  plan, not to the constitution.
+- Backwards compatibility: no code exists yet that emits logs, so nothing
+  breaks; future features MUST include logging in their specs and plans.
+- Follow-up files: none required. Specs and plans written from now on MUST
+  describe the logging of each feature.
 -->
 # open-middleman-lib Constitution
 
 ## Core Principles
 
 ### I. Library-Only Scope
-The project delivers a library and nothing else. It MUST NOT build or ship
-an executable. Applications that expose the library are built by consumers.
+The project delivers a Rust library crate and nothing else. It MUST NOT
+declare a `[[bin]]` target or ship an executable. Applications that expose
+the library are built by consumers.
 
 ### II. Specifications Are the Source of Truth
 Specifications define expected behavior; the code MUST conform to them.
@@ -54,20 +48,21 @@ covers exactly one scenario. Every public behavior is covered at least for
 its success path, its error path, and its boundary conditions.
 
 ### IV. Target Compatibility
-Windows 8 Embedded (x86_64) is the main target. The library MUST build and
-run on it, and support for it MUST NOT be dropped or degraded. The toolchain
-and every dependency MUST support Windows 8 Embedded, and nothing used by the
-library MAY require operating system APIs or features that are unavailable on
-Windows 8. A change that breaks Windows 8 Embedded support is rejected, even
-if it works on newer systems.
+The library MUST build and run on Windows 8 Embedded (`x86_64-pc-windows-msvc`).
+It declares `rust-version = "1.77.2"` in
+`Cargo.toml`, uses `edition = "2021"` (the 2024 edition requires a newer
+compiler), and the development toolchain is pinned to 1.77.2 via
+`rust-toolchain.toml`. Every dependency MUST build on 1.77.2 and MUST NOT
+require Windows APIs unavailable on Windows 8.
 
 ### V. Production Code Safety
-Production code MUST NOT abort or crash the process on an unexpected state,
-and MUST NOT assume that an operation which can fail has succeeded. "Production
-code" is everything except test code. Failures are reported to the caller as
-explicit, typed errors; an empty value is used only for the legitimate absence
-of a value, never to signal an error. Tests may assert and abort freely.
-This rule MUST be enforced by an automated check in CI.
+`unwrap()`, `expect()` and `panic!()` are prohibited in production code.
+"Production code" is everything outside `#[cfg(test)]` modules and the
+`tests/` directory. Failures are reported through `Result` with an explicit
+error type; `Option` is used only for legitimate absence of a value. Tests
+may use `unwrap()` and `expect()`.
+Enforced in CI via `clippy::unwrap_used`, `clippy::expect_used` and
+`clippy::panic`.
 
 ### VI. Mandatory Logging
 Logging is REQUIRED, not optional. The library MUST emit log records for every
@@ -108,9 +103,8 @@ review rejects changes that add operations or failure paths without logging.
   and `develop`, if used, are exempt.
 - Code review verifies compliance with all Core Principles, including the
   presence of logging required by Principle VI.
-- CI builds and tests the library for the main target (Principle IV).
-- CI runs the automated check that enforces Principle V and fails on any
-  violation.
+- CI builds and tests the library on the 1.77.2 toolchain.
+- CI runs clippy with `unwrap_used`, `expect_used` and `panic` denied.
 
 ## Governance
 
@@ -123,4 +117,4 @@ review rejects changes that add operations or failure paths without logging.
   rule, PATCH for wording and clarifications.
 - Violations must be justified in the plan's Complexity Tracking section.
 
-**Version**: 3.0.0 | **Ratified**: 2026-11-06 | **Last Amended**: 2026-11-24
+**Version**: 2.3.0 | **Ratified**: 2026-11-06 | **Last Amended**: 2026-11-24
